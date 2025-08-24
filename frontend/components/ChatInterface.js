@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { functions } from '../utils/firebase';
 import { getAuth } from 'firebase/auth';
 import { getFirestore, collection, query, where, getDocs } from 'firebase/firestore';
 
@@ -79,17 +78,28 @@ const ChatInterface = () => {
     setIsLoading(true);
 
     try {
-      // Call Firebase function for chat
-      const chatFunction = functions.httpsCallable('chat');
-      const result = await chatFunction({
-        uid: auth.currentUser.uid,
-        docId: selectedDocument,
-        question: inputMessage
+      // Call backend chat API
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: auth.currentUser.uid,
+          docId: selectedDocument,
+          question: inputMessage
+        })
       });
+
+      if (!response.ok) {
+        throw new Error(`Chat failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
 
       const aiMessage = {
         id: Date.now() + 1,
-        text: result.data.answer,
+        text: result.answer,
         sender: 'ai',
         timestamp: new Date()
       };

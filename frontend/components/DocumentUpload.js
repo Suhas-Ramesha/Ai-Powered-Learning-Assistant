@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { functions } from '../utils/firebase';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { getAuth } from 'firebase/auth';
 
@@ -80,14 +79,25 @@ const DocumentUpload = () => {
         console.log('Text file uploaded to:', downloadURL);
       }
 
-      // Call backend upload function
-      const uploadFunction = functions.httpsCallable('upload');
-      const result = await uploadFunction({
-        uid: uid,
-        filename: filename
+      // Call backend upload API
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          uid: uid,
+          filename: filename
+        })
       });
 
-      setUploadStatus(`Successfully uploaded! Document ID: ${result.data.docId}`);
+      if (!response.ok) {
+        throw new Error(`Upload failed: ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      setUploadStatus(`Successfully uploaded! Document ID: ${result.docId}`);
       
       // Reset form
       setFile(null);
