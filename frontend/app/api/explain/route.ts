@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import ragService from '../../lib/simpleRagService.js';
+import ragService from '@/lib/simpleRagService.js';
 
 export async function POST(request: NextRequest) {
   // Handle CORS preflight

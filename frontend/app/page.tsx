@@ -1,9 +1,9 @@
 'use client';
 
-import { useAuth } from '../context/AuthContext';
-import ChatInterface from '../components/ChatInterface';
-import DocumentUpload from '../components/DocumentUpload';
-import LoginButton from '../components/LoginButton';
+import { useAuth } from '@/context/AuthContext';
+import ChatInterface from '@/components/ChatInterface';
+import DocumentUpload from '@/components/DocumentUpload';
+import LoginButton from '@/components/LoginButton';
 import { useState } from 'react';
 
 export default function Home() {
