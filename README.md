@@ -45,7 +45,7 @@ A comprehensive AI learning platform that transforms your documents into interac
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 - Firebase project
 - Google API key for Gemini
@@ -53,25 +53,25 @@ A comprehensive AI learning platform that transforms your documents into interac
 ### Installation
 
 1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
+```bash
+git clone <repository-url>
    cd ai-powered-learning-assistant
    ```
 
 2. **Install dependencies**
    ```bash
-   cd frontend
-   npm install
-   ```
+cd frontend
+npm install
+```
 
 3. **Set up environment variables**
-   ```bash
+```bash
    cp .env.local.example .env.local
    # Edit .env.local with your actual values
    ```
 
 4. **Start development server**
-   ```bash
+```bash
    npm run dev
    ```
 
