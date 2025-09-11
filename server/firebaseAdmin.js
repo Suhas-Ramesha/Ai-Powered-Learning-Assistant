@@ -6,9 +6,9 @@ import { getStorage } from 'firebase-admin/storage';
 if (!getApps().length) {
   initializeApp({
     credential: cert({
-      projectId: 'ai-powered-learning-assi-9d48d',
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+      project_id: 'ai-powered-learning-assi-9d48d',
+      client_email: process.env.FIREBASE_CLIENT_EMAIL,
+      private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     }),
     storageBucket: 'ai-powered-learning-assi-9d48d.appspot.com',
   });

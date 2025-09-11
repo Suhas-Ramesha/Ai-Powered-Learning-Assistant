@@ -1,39 +1,28 @@
-import axios from 'axios';
+import RAGService from './ragService.js';
 
-// Gemini API configuration
-const GEMINI_API_KEY = process.env.GOOGLE_API_KEY;
-const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+const ragService = new RAGService();
 
-export async function getAnswer(question, docId) {
+export async function queryDocument(query, docId, conversationHistory = []) {
   try {
-    console.log(`Getting answer for question: "${question}" in doc: ${docId}`);
+    console.log(`Querying document ${docId} with: "${query}"`);
     
-    // In production, this would:
-    // 1. Search vector database for relevant chunks
-    // 2. Retrieve top-k relevant documents
-    // 3. Generate answer using Gemini
+    const result = await ragService.chatWithDocument(query, docId, conversationHistory);
     
-    const prompt = `Based on the document ${docId}, answer this question: ${question}
+    if (result.success) {
+      console.log(`✅ Generated response for query in doc ${docId}`);
+    } else {
+      console.error(`❌ Failed to query doc ${docId}: ${result.error}`);
+    }
     
-    If you don't have specific information about this document, provide a helpful general response.`;
-    
-    const response = await axios.post(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-      contents: [{
-        parts: [{
-          text: prompt
-        }]
-      }]
-    });
-    
-    const answer = response.data.candidates[0].content.parts[0].text;
-    
-    console.log(`Generated answer for doc ${docId}`);
-    return answer;
-    
+    return result;
   } catch (error) {
-    console.error(`Error getting answer for question '${question}' in doc '${docId}':`, error);
-    return `Sorry, I encountered an error while processing your question: ${error.message}`;
+    console.error(`Error querying document ${docId}:`, error);
+    return {
+      success: false,
+      error: error.message,
+      docId: docId
+    };
   }
 }
 
-export default getAnswer;
+export default queryDocument;

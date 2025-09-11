@@ -1,258 +1,320 @@
-# AI Learning Assistant - Week 1 Backend
+# 🤖 AI-Powered Learning Assistant
 
-A comprehensive AI learning assistant built with Next.js, Firebase, and LangChain + Gemini for document processing, RAG-based Q&A, and intelligent learning features.
+A comprehensive AI learning platform that transforms your documents into interactive learning experiences using advanced AI technologies.
 
-## 🎯 Week 1 Focus: Core RAG Backend
+![AI Learning Assistant](https://img.shields.io/badge/AI-Powered-blue) ![Next.js](https://img.shields.io/badge/Next.js-14-black) ![Firebase](https://img.shields.io/badge/Firebase-Google-orange) ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 
-This week implements the foundational backend infrastructure:
-- **Document Upload & Processing**: Extract text → chunk → Gemini embeddings → ChromaDB
-- **RAG Chat System**: Retrieve relevant chunks → Gemini LLM → return answers
-- **Firebase Integration**: Storage, Firestore, Functions, Auth
-- **Frontend**: Upload + Chat UI
+## ✨ Features
 
-## 🏗️ Architecture (Week 1)
+### 🎯 Core Functionality
+- **📄 Document Upload**: Support for TXT, MD, PDF, DOC, DOCX files
+- **🧠 AI-Powered Summaries**: Get comprehensive summaries with key concepts
+- **📝 Interactive Quizzes**: Generate and take quizzes based on your documents
+- **💡 Concept Explanation**: Ask questions and get detailed explanations
+- **💬 Smart Chat**: Chat with your documents using RAG (Retrieval-Augmented Generation)
+
+### 🎨 Modern UI/UX
+- **🌐 Beautiful Landing Page**: Modern design with hero section and features
+- **📱 Responsive Design**: Works perfectly on desktop, tablet, and mobile
+- **🎭 Interactive Quiz Interface**: Question-by-question format with explanations
+- **🗂️ Document Management**: Upload, view, and delete documents easily
+- **🔐 Secure Authentication**: Google OAuth integration
+
+### 🚀 Technical Features
+- **⚡ Real-time Processing**: Instant AI responses
+- **🔄 RAG Pipeline**: Advanced document retrieval and generation
+- **☁️ Cloud Storage**: Firebase integration for scalability
+- **🛡️ Type Safety**: Full TypeScript implementation
+- **📊 Progress Tracking**: Quiz scores and learning analytics
+
+## 🏗️ Architecture
 
 ```
-Frontend (Next.js + Firebase SDK)
-├── Document Upload → Firebase Storage
-├── Chat Interface → Firebase Functions
-└── Firebase Auth (Google/Email login)
-
-Backend (Firebase Cloud Functions + LangChain)
-├── /upload API → process_document() → ChromaDB
-├── /chat API → get_answer() → Gemini RAG
-└── Storage Trigger → auto-process uploads
-
-RAG Core (LangChain + ChromaDB + Gemini)
-├── Document Chunking (500 chars, 50 overlap)
-├── Gemini Embeddings (models/embedding-001)
-├── ChromaDB Vector Store
-└── Gemini LLM (gemini-pro)
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Frontend      │    │   Backend       │    │   AI Services   │
+│   (Next.js 14)  │◄──►│   (API Routes)  │◄──►│   (Gemini API)  │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Firebase      │    │   RAG Service   │    │   Document      │
+│   (Auth/DB)     │    │   (Simple)      │    │   Processing    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
 ## 🚀 Quick Start
 
-### 1. Prerequisites
-- Node.js 18+
-- Python 3.8+
-- Firebase account
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+- Firebase project
 - Google API key for Gemini
 
-### 2. Installation
-```bash
-# Clone the repository
-git clone <repository-url>
-cd ai-learning-assistant
+### Installation
 
-# Install frontend dependencies
-cd frontend
-npm install
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd ai-powered-learning-assistant
+   ```
 
-# Install backend dependencies
-cd ../functions
-npm install
-pip install -r requirements.txt
+2. **Install dependencies**
+   ```bash
+   cd frontend
+   npm install
+   ```
+
+3. **Set up environment variables**
+   ```bash
+   cp .env.local.example .env.local
+   # Edit .env.local with your actual values
+   ```
+
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open your browser**
+   Navigate to `http://localhost:3000`
+
+## 🔧 Configuration
+
+### Environment Variables
+
+Create a `.env.local` file in the `frontend` directory:
+
+```env
+# Google API Key for Gemini AI
+GOOGLE_API_KEY=your_google_api_key_here
+
+# Firebase Admin SDK (for API routes)
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_client_email
+FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nyour_private_key_here\n-----END PRIVATE KEY-----"
+FIREBASE_STORAGE_BUCKET=your_storage_bucket
+
+# Firebase Client SDK (for frontend)
+NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
 ```
 
-### 3. Firebase Setup
-```bash
-# Install Firebase CLI
-npm install -g firebase-tools
+### Firebase Setup
 
-# Login and initialize
-firebase login
-firebase init
-
-# Choose services: Functions, Firestore, Storage, Auth
-# Use Python for functions
-```
-
-### 4. Environment Configuration
-```bash
-# Set Google API key
-firebase functions:config:set google.api_key="your_google_api_key"
-
-# Or set locally
-export GOOGLE_API_KEY="your_google_api_key"
-```
-
-### 5. Start Development
-```bash
-# Start Firebase emulators
-firebase emulators:start
-
-# Start frontend (in another terminal)
-cd frontend
-npm run dev
-```
+1. **Create a Firebase project**
+2. **Enable Authentication** (Google provider)
+3. **Create Firestore database**
+4. **Set up Firebase Storage**
+5. **Configure security rules** (see `firestore.rules` and `storage.rules`)
 
 ## 📁 Project Structure
 
 ```
-/project-root
-├── /frontend (Next.js + Firebase SDK)
-│   ├── /components
-│   │   ├── DocumentUpload.js    # File upload to Storage
-│   │   └── ChatInterface.js     # Chat with documents
-│   ├── /pages
-│   │   └── index.js             # Main app page
-│   └── /utils
-│       └── firebase.js          # Firebase configuration
-├── /functions (Firebase Cloud Functions)
-│   ├── main.py                  # Week 1 APIs: /upload, /chat
-│   ├── index.js                 # Function exports
-│   └── /rag
-│       ├── ingest.py            # process_document() interface
-│       └── query.py             # get_answer() interface
-├── firebase.json               # Firebase configuration
-├── firestore.rules             # Security rules
-├── storage.rules               # Storage security
-└── WEEK1_SETUP.md             # Detailed setup guide
+ai-powered-learning-assistant/
+├── 📁 frontend/                 # Next.js Frontend Application
+│   ├── 📁 app/                  # Next.js 14 App Router
+│   │   ├── 📁 api/              # API Routes (TypeScript)
+│   │   │   ├── 📁 chat/         # Chat API with RAG
+│   │   │   ├── 📁 explain/      # Concept explanation API
+│   │   │   ├── 📁 quiz/         # Quiz generation API
+│   │   │   ├── 📁 summarize/    # Document summarization API
+│   │   │   └── 📁 upload/       # Document upload API
+│   │   ├── 📄 globals.css       # Global styles
+│   │   ├── 📄 layout.tsx        # Root layout with AuthProvider
+│   │   └── 📄 page.tsx          # Home page with modern landing
+│   ├── 📁 components/           # React Components (TypeScript)
+│   │   ├── 📄 ChatInterface.tsx # Main chat component with RAG
+│   │   ├── 📄 DocumentUpload.tsx # Document upload component
+│   │   ├── 📄 QuizInterface.tsx # Interactive quiz component
+│   │   └── 📄 LoginButton.tsx   # Google OAuth login button
+│   ├── 📁 context/              # React Context Providers
+│   │   └── 📄 AuthContext.tsx   # Authentication context
+│   ├── 📁 lib/                  # Utility Libraries
+│   │   ├── 📄 firebase.ts       # Firebase client configuration
+│   │   └── 📄 simpleRagService.js # Simplified RAG service
+│   ├── 📄 .env.local.example    # Environment variables template
+│   ├── 📄 next.config.js        # Next.js configuration
+│   ├── 📄 package.json          # Frontend dependencies
+│   └── 📄 tsconfig.json         # TypeScript configuration
+├── 📁 server/                   # Backend Services
+│   ├── 📁 rag/                  # RAG Pipeline Implementation
+│   │   ├── 📄 ragService.js     # Main RAG service with LangChain
+│   │   ├── 📄 summarize.js      # Document summarization functions
+│   │   ├── 📄 quiz.js           # Quiz generation functions
+│   │   ├── 📄 explain.js        # Concept explanation functions
+│   │   ├── 📄 query.js          # Document querying functions
+│   │   └── 📄 index.js          # RAG functions export
+│   └── 📄 firebaseAdmin.js      # Firebase Admin SDK configuration
+├── 📄 .env.local                # Root environment variables
+├── 📄 firebase.json             # Firebase project configuration
+├── 📄 firestore.rules           # Firestore security rules
+├── 📄 storage.rules             # Firebase Storage security rules
+├── 📄 vercel.json               # Vercel deployment configuration
+├── 📄 DEPLOYMENT.md             # Deployment guide
+└── 📄 README.md                 # This file
 ```
 
-## 🔧 Week 1 APIs
+## 🎮 Usage
 
-### `/upload` API
-Process uploaded documents and store embeddings.
+### 1. **Authentication**
+- Click "Get Started Free" on the landing page
+- Sign in with your Google account
+- Access the main application
 
-**Request:**
-```json
+### 2. **Upload Documents**
+- Choose between file upload or text input
+- Supported formats: TXT, MD, PDF, DOC, DOCX
+- Documents are processed and stored securely
+
+### 3. **AI Features**
+- **Summarize**: Get comprehensive document summaries
+- **Quiz**: Generate and take interactive quizzes
+- **Explain**: Ask questions about concepts
+- **Chat**: Have conversations about your documents
+
+### 4. **Quiz Experience**
+- Question-by-question format
+- Multiple choice answers
+- Instant feedback and explanations
+- Score tracking and progress
+
+## 🔧 API Endpoints
+
+### Chat API
+```http
+POST /api/chat
+Content-Type: application/json
+
 {
-  "uid": "user123",
-  "filename": "notes.pdf"
+  "uid": "user_id",
+  "docId": "document_id",
+  "question": "Your question",
+  "conversationHistory": []
 }
 ```
 
-**Response:**
-```json
+### Upload API
+```http
+POST /api/upload
+Content-Type: application/json
+
 {
-  "message": "File processed",
-  "docId": "notes_pdf"
+  "uid": "user_id",
+  "filename": "document_name.txt",
+  "text": "document_content"
 }
 ```
 
-### `/chat` API
-Answer questions about uploaded documents using RAG.
+### Summarize API
+```http
+POST /api/summarize
+Content-Type: application/json
 
-**Request:**
-```json
 {
-  "uid": "user123",
-  "docId": "notes_pdf",
-  "question": "What is machine learning?"
+  "uid": "user_id",
+  "docId": "document_id",
+  "text": "summarize"
 }
 ```
 
-**Response:**
-```json
+### Quiz API
+```http
+POST /api/quiz
+Content-Type: application/json
+
 {
-  "answer": "Machine learning is a subset of artificial intelligence..."
+  "uid": "user_id",
+  "docId": "document_id",
+  "text": "generate quiz",
+  "difficulty": "medium",
+  "numQuestions": 5
 }
 ```
 
-## 🗄️ Firestore Schema (Week 1)
+### Explain API
+```http
+POST /api/explain
+Content-Type: application/json
 
-### Documents
-```
-users/{uid}/documents/{docId}
 {
-  filename: string,
-  uploadedAt: timestamp,
-  status: "ready",
-  docId: string
+  "uid": "user_id",
+  "docId": "document_id",
+  "concept": "concept_to_explain"
 }
 ```
-
-### Conversations
-```
-conversations/{uid}_{docId}/messages/{msgId}
-{
-  sender: "user" | "bot",
-  text: string,
-  timestamp: timestamp,
-  docId: string
-}
-```
-
-## 🔒 Security Rules
-
-### Firestore Rules
-- Users can only access their own documents
-- Conversations are user-specific
-- Authentication required for all operations
-
-### Storage Rules
-- Users can upload to `notes/{uid}/` folder
-- Read access to processed documents
-- System-only write access to processed documents
-
-## 🧪 Testing Week 1
-
-### Test Upload Flow
-1. Upload document via frontend
-2. Verify file appears in Firebase Storage
-3. Check Firestore for document metadata
-4. Confirm ChromaDB has embeddings
-
-### Test Chat Flow
-1. Select a document in chat interface
-2. Ask a question
-3. Verify RAG response from Gemini
-4. Check conversation history in Firestore
 
 ## 🚀 Deployment
 
+### Vercel (Recommended)
+1. Install Vercel CLI: `npm i -g vercel`
+2. Run `vercel` from project root
+3. Set environment variables in Vercel dashboard
+4. Configure Firebase authorized domains
+
+### Other Platforms
+- **Netlify**: Deploy the `frontend/out` directory
+- **Railway**: Connect GitHub repository
+- **Self-hosted**: Use PM2 for process management
+
+See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions.
+
+## 🛠️ Development
+
+### Available Scripts
+
 ```bash
-# Deploy all functions
-firebase deploy --only functions
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
 
-# Deploy specific components
-firebase deploy --only firestore:rules
-firebase deploy --only storage:rules
-firebase deploy --only hosting
+# Testing
+npm run test         # Run tests
+npm run test:watch   # Run tests in watch mode
 ```
 
-## 📋 Week 1 Checklist
+### Tech Stack
 
-- [ ] Firebase project initialized (Functions, Firestore, Storage, Auth)
-- [ ] `/upload` function stores embeddings + doc metadata
-- [ ] `/chat` function returns Gemini RAG answers + logs to Firestore
-- [ ] Firestore schema ready (users + conversations)
-- [ ] Storage trigger processes uploaded files
-- [ ] Frontend upload + chat UI working
-- [ ] Can ask questions from uploaded documents
+- **Frontend**: Next.js 14, React 18, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Firebase Admin SDK
+- **Database**: Firebase Firestore
+- **Authentication**: Firebase Auth (Google OAuth)
+- **Storage**: Firebase Storage
+- **AI**: Google Gemini API
+- **RAG**: Custom implementation with keyword matching
+- **Deployment**: Vercel (recommended)
 
-## 🔮 Next Steps (Week 2)
+## 🤝 Contributing
 
-- Add `/summarize` function (map-reduce with Gemini)
-- Add `/generateQuiz` function (Gemini prompt → MCQs)
-- Frontend: Summarize button, quiz attempt UI
-- Deliverable: Upload → Summarize → Generate & Take Quiz
-
-## 🤝 NLP Engineer Interface
-
-The backend expects these functions from the NLP engineer:
-
-```python
-# In rag/ingest.py
-def process_document(file_path: str, doc_id: str) -> Dict[str, Any]:
-    """Process document: chunk + embed + store in ChromaDB"""
-    pass
-
-# In rag/query.py  
-def get_answer(question: str, doc_id: str) -> str:
-    """Get RAG answer: retrieve + Gemini LLM"""
-    pass
-```
-
-## 📚 Technologies Used
-
-- **Frontend**: Next.js, React, Tailwind CSS, Firebase SDK
-- **Backend**: Firebase Cloud Functions, Python (functions_framework)
-- **AI/ML**: LangChain, Google Gemini, ChromaDB
-- **Database**: Firebase Firestore, Firebase Storage
-- **Authentication**: Firebase Auth
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -am 'Add feature'`
+4. Push to branch: `git push origin feature-name`
+5. Submit a pull request
 
 ## 📄 License
 
-MIT License - see LICENSE file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Google Gemini API** for AI capabilities
+- **Firebase** for backend services
+- **Next.js** for the React framework
+- **Tailwind CSS** for styling
+- **Vercel** for deployment platform
+
+## 📞 Support
+
+- **Issues**: [GitHub Issues](https://github.com/your-repo/issues)
+- **Documentation**: [Wiki](https://github.com/your-repo/wiki)
+- **Discussions**: [GitHub Discussions](https://github.com/your-repo/discussions)
+
+---
+
+**Made with ❤️ for learners everywhere**
