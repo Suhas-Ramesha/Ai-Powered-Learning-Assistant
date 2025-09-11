@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import ragService from '../../../lib/simpleRagService.js';
+import ragService from '@/lib/simpleRagService.js';
 
 // Initialize Firebase Admin if not already initialized
 if (!getApps().length) {

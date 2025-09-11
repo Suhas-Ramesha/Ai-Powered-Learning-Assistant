@@ -1,7 +1,7 @@
 "use client";
 import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { auth } from "../lib/firebase";
-import { useAuth } from "../context/AuthContext";
+import { auth } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 
 interface LoginButtonProps {
   variant?: 'default' | 'landing' | 'cta';
