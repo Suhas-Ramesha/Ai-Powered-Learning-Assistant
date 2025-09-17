@@ -1,62 +1,14 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { initializeApp, getApps } from 'firebase-admin/app';
-import { getFirestore } from 'firebase-admin/firestore';
 
 class SimpleRAGService {
   constructor() {
     this.genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY);
-    this.model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    
-    // Initialize Firebase Admin
-    if (!getApps().length) {
-      initializeApp({
-        credential: {
-          projectId: process.env.FIREBASE_PROJECT_ID,
-          clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-          privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        },
-      });
-    }
-    this.db = getFirestore();
+    this.model = this.genAI.getGenerativeModel({ model: "gemini-pro" });
     
     // In-memory storage for document chunks (for demo purposes)
     // In production, you'd use a proper vector database
     this.documentStore = new Map();
     this.vectorStore = new Map();
-  }
-
-  // Helper function to load document from Firebase
-  async loadDocumentFromFirebase(docId) {
-    try {
-      console.log(`📄 Loading document ${docId} from Firebase`);
-      
-      // Try to get the document from the main documents collection
-      const docRef = this.db.collection('documents').doc(docId);
-      const doc = await docRef.get();
-      
-      if (doc.exists) {
-        const data = doc.data();
-        let fullText = '';
-        
-        // If it's a chunked document, combine all chunks
-        if (data.chunks && Array.isArray(data.chunks)) {
-          fullText = data.chunks.join(' ');
-        } else if (data.text) {
-          fullText = data.text;
-        }
-        
-        if (fullText) {
-          // Store in memory cache for future use
-          this.documentStore.set(docId, { text: fullText });
-          return fullText;
-        }
-      }
-      
-      return null;
-    } catch (error) {
-      console.error(`❌ Error loading document ${docId} from Firebase:`, error);
-      return null;
-    }
   }
 
   // Simple text chunking function
@@ -174,15 +126,8 @@ class SimpleRAGService {
       const relevantChunks = this.retrieveRelevantChunks(question, docId, 5);
       
       if (relevantChunks.length === 0) {
-        // If no relevant chunks found, try to load from Firebase
-        let doc = this.documentStore.get(docId);
-        if (!doc) {
-          const firebaseText = await this.loadDocumentFromFirebase(docId);
-          if (firebaseText) {
-            doc = { text: firebaseText };
-          }
-        }
-        
+        // If no relevant chunks found, use the full document (truncated)
+        const doc = this.documentStore.get(docId);
         if (!doc) {
           return {
             success: false,
@@ -246,16 +191,8 @@ Please provide a helpful and accurate answer based on the context provided:`;
       
       // Get document content
       let contentToSummarize = text;
-      if (docId) {
-        if (this.documentStore.has(docId)) {
-          contentToSummarize = this.documentStore.get(docId).text;
-        } else {
-          // Try to load from Firebase
-          const firebaseText = await this.loadDocumentFromFirebase(docId);
-          if (firebaseText) {
-            contentToSummarize = firebaseText;
-          }
-        }
+      if (docId && this.documentStore.has(docId)) {
+        contentToSummarize = this.documentStore.get(docId).text;
       }
 
       // Truncate if too long
@@ -300,16 +237,8 @@ Summary:`;
       
       // Get document content
       let contentForQuiz = text;
-      if (docId) {
-        if (this.documentStore.has(docId)) {
-          contentForQuiz = this.documentStore.get(docId).text;
-        } else {
-          // Try to load from Firebase
-          const firebaseText = await this.loadDocumentFromFirebase(docId);
-          if (firebaseText) {
-            contentForQuiz = firebaseText;
-          }
-        }
+      if (docId && this.documentStore.has(docId)) {
+        contentForQuiz = this.documentStore.get(docId).text;
       }
 
       // Truncate if too long
@@ -405,19 +334,10 @@ Quiz JSON:`;
       let context = '';
       if (relevantChunks.length > 0) {
         context = relevantChunks.map(chunk => chunk.text).join('\n\n');
-      } else {
-        // If no specific chunks found, try to load from Firebase
-        let doc = this.documentStore.get(docId);
-        if (!doc) {
-          const firebaseText = await this.loadDocumentFromFirebase(docId);
-          if (firebaseText) {
-            doc = { text: firebaseText };
-          }
-        }
-        
-        if (doc) {
-          context = doc.text.substring(0, 3000);
-        }
+      } else if (this.documentStore.has(docId)) {
+        // If no specific chunks found, use part of the document
+        const doc = this.documentStore.get(docId);
+        context = doc.text.substring(0, 3000);
       }
 
       const prompt = `Please explain the concept "${concept}" based on the following document context. Provide a clear, detailed explanation that would help someone understand this concept better.
